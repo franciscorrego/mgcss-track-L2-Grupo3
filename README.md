@@ -1,5 +1,4 @@
 # mgcss-track-L2-Grupo3
-![CI](https://github.com/franciscorrego/Proyecto_Mantenimiento/actions/workflows/ci.yml/badge.svg)
 
 ## Ejecución del proyecto
 Para compilar y verificar el proyecto, navega a la carpeta `Proyecto_Mantenimiento` y ejecuta:
