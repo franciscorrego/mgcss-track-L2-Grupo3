@@ -24,7 +24,7 @@ public class Solicitud {
     public LocalDateTime getFechaCreacion() { return fechaCreacion; }
     public void setFechaCreacion(LocalDateTime fechaCreacion) { this.fechaCreacion = fechaCreacion; }
     
-    //regla de negocio
+    //Regla 1
     public void cerrar() {
         if (this.estado != Estado.EN_PROCESO) {
             throw new IllegalStateException("Solo solicitudes en proceso pueden cerrarse");
@@ -33,6 +33,12 @@ public class Solicitud {
     }
     
     public void asignarTecnico(Tecnico tecnico) {
+        // Regla 3 
+        if (this.estado == Estado.CERRADA) {
+            throw new IllegalStateException("No se puede asignar un técnico a una solicitud cerrada");
+        }
+        
+        // Regla 2
         if (!tecnico.isActivo()) {
             throw new IllegalStateException("Solo se puede asignar un técnico activo a una solicitud");
         }
