@@ -31,4 +31,10 @@ public class Solicitud {
         }
         this.estado = Estado.CERRADA;
     }
+    
+    public void asignarTecnico(Tecnico tecnico) {
+        if (!tecnico.isActivo()) {
+            throw new IllegalStateException("Solo se puede asignar un técnico activo a una solicitud");
+        }
+    }
 }
