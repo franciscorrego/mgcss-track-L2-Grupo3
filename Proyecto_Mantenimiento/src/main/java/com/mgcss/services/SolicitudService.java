@@ -25,10 +25,22 @@ public class SolicitudService {
         Tecnico tecnico = tecnicoRepository.findById(tecnicoId)
                 .orElseThrow(() -> new IllegalArgumentException("El técnico no existe"));
 
-        // 2. El servicio orquesta; el dominio decide.
+        // 2. El servicio llama al dominio.
         solicitud.asignarTecnico(tecnico);
 
         // 3. Guardamos el estado final
+        solicitudRepository.save(solicitud);
+    }
+    
+    public void cerrarSolicitud(Long solicitudId) {
+        // 1. Recuperamos la solicitud
+        Solicitud solicitud = solicitudRepository.findById(solicitudId)
+                .orElseThrow(() -> new IllegalArgumentException("La solicitud no existe"));
+
+        // 2. El servicio llama al dominio
+        solicitud.cerrar();
+
+        // 3. Guardamos el cambio
         solicitudRepository.save(solicitud);
     }
 }

@@ -35,11 +35,15 @@ class SolicitudTest {
 
     @Test
     void debe_permitir_asignar_tecnico_activo() {
+        // 1. ARRANGE
         Solicitud solicitud = new Solicitud(1L, Estado.ABIERTA, null); 
         Tecnico tecnicoActivo = new Tecnico(true);
-        assertDoesNotThrow(() -> {
-            solicitud.asignarTecnico(tecnicoActivo); 
-        });
+        
+        // 2. ACT
+        solicitud.asignarTecnico(tecnicoActivo); 
+        
+        // 3. ASSERT (Comprobamos la regla de negocio real)
+        assertEquals(Estado.EN_PROCESO, solicitud.getEstado());
     }
 
     // --- REGLA 3: NO TOCAR SOLICITUDES CERRADAS ---
