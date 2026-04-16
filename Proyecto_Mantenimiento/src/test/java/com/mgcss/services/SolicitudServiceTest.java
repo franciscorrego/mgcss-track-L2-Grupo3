@@ -4,7 +4,7 @@ import com.mgcss.domain.*;
 import com.mgcss.infrastructure.TecnicoRepository;
 import com.mgcss.infrastructure.SolicitudRepository;
 
-
+import org.junit.jupiter.api.BeforeEach; 
 import org.junit.jupiter.api.Test;
 import java.util.Optional;
 
@@ -13,45 +13,77 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SolicitudServiceTest {
 
+    // 1. Declaramos los mocks y el servicio a nivel de clase
+    private SolicitudRepository mockRepoSolicitud;
+    private TecnicoRepository mockRepoTecnico;
+    private SolicitudService servicio;
+
+    // 2. Lo configuramos UNA SOLA VEZ
+    @BeforeEach
+    void setUp() {
+        mockRepoSolicitud = mock(SolicitudRepository.class);
+        mockRepoTecnico = mock(TecnicoRepository.class);
+        servicio = new SolicitudService(mockRepoSolicitud, mockRepoTecnico); 
+    }
+
     @Test
     void debe_guardar_solicitud_al_asignar_tecnico() {
-        // 1. ARRANGE: Crear los "actores de reparto" (Mocks)
-        SolicitudRepository mockRepoSolicitud = mock(SolicitudRepository.class);
-        TecnicoRepository mockRepoTecnico = mock(TecnicoRepository.class);
-        
-        // Le pasamos los mocks al servicio (Aislamiento total)
-        SolicitudService servicio = new SolicitudService(mockRepoSolicitud, mockRepoTecnico);
-
-        // Preparamos los datos de mentira que devolverán los repositorios
+        // ARRANGE (Solo los datos específicos de este test)
         Solicitud solicitud = new Solicitud(1L, Estado.ABIERTA, null);
         Tecnico tecnico = new Tecnico(true);
         
         when(mockRepoSolicitud.findById(1L)).thenReturn(Optional.of(solicitud));
         when(mockRepoTecnico.findById(99L)).thenReturn(Optional.of(tecnico));
 
-        // 2. ACT: El director de orquesta empieza a trabajar
+        // ACT
         servicio.asignarTecnico(1L, 99L);
 
-        // 3. ASSERT: Verificamos que el servicio le dio la orden de guardar al repositorio
+        // ASSERT
         verify(mockRepoSolicitud).save(solicitud);
-        
-        // Verificamos que el estado de la entidad cambió gracias al servicio
-        assertEquals(Estado.ABIERTA, solicitud.getEstado()); // OJO: Hemos puesto ABIERTA a propósito para que falle si el servicio no hace nada
+        assertEquals(Estado.EN_PROCESO, solicitud.getEstado());
     }
     
     @Test
     void debe_lanzar_excepcion_si_solicitud_no_existe() {
-        // 1. ARRANGE
-        SolicitudRepository mockRepoSolicitud = mock(SolicitudRepository.class);
-        TecnicoRepository mockRepoTecnico = mock(TecnicoRepository.class);
-        SolicitudService servicio = new SolicitudService(mockRepoSolicitud, mockRepoTecnico);
-
-        // Simulamos que la base de datos NO encuentra la solicitud
+        // ARRANGE
         when(mockRepoSolicitud.findById(1L)).thenReturn(Optional.empty());
 
-        // 2 & 3. ACT & ASSERT: Verificamos que al intentar asignar, explota con nuestra excepción
+        // ACT & ASSERT
         assertThrows(IllegalArgumentException.class, () -> {
             servicio.asignarTecnico(1L, 99L);
         });
+
+        // REGLA DE ORO
+        verify(mockRepoSolicitud, never()).save(any());
+    }
+
+    @Test
+    void debe_guardar_solicitud_al_cerrarla() {
+        // ARRANGE
+        Solicitud solicitud = new Solicitud(1L, Estado.EN_PROCESO, null);
+        when(mockRepoSolicitud.findById(1L)).thenReturn(Optional.of(solicitud));
+
+        // ACT
+        servicio.cerrarSolicitud(1L);
+
+        // ASSERT
+        verify(mockRepoSolicitud).save(solicitud);
+        assertEquals(Estado.CERRADA, solicitud.getEstado());
+    }
+
+    @Test
+    void debe_lanzar_excepcion_si_tecnico_no_existe() {
+        // ARRANGE
+        Solicitud solicitud = new Solicitud(1L, Estado.ABIERTA, null);
+        when(mockRepoSolicitud.findById(1L)).thenReturn(Optional.of(solicitud));
+        when(mockRepoTecnico.findById(99L)).thenReturn(Optional.empty());
+
+        // ACT & ASSERT
+        assertThrows(IllegalArgumentException.class, () -> {
+            servicio.asignarTecnico(1L, 99L);
+        });
+
+        // REGLA DE ORO
+        verify(mockRepoSolicitud, never()).save(any());
     }
 }

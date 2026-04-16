@@ -42,5 +42,7 @@ public class Solicitud {
         if (!tecnico.isActivo()) {
             throw new IllegalStateException("Solo se puede asignar un técnico activo a una solicitud");
         }
+
+        this.estado = Estado.EN_PROCESO; 
     }
 }
