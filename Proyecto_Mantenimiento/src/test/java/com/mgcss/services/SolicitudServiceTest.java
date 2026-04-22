@@ -2,6 +2,7 @@ package com.mgcss.services;
 
 import com.mgcss.domain.*;
 import com.mgcss.infrastructure.TecnicoRepository;
+import com.mgcss.infrastructure.persistence.SolicitudEntity;
 import com.mgcss.infrastructure.SolicitudRepository;
 
 import org.junit.jupiter.api.BeforeEach; 
@@ -29,7 +30,7 @@ class SolicitudServiceTest {
     @Test
     void debe_guardar_solicitud_al_asignar_tecnico() {
         // ARRANGE (Solo los datos específicos de este test)
-        Solicitud solicitud = new Solicitud(1L, Estado.ABIERTA, null);
+        SolicitudEntity solicitud = new SolicitudEntity(1L, Estado.ABIERTA, null);
         Tecnico tecnico = new Tecnico(true);
         
         when(mockRepoSolicitud.findById(1L)).thenReturn(Optional.of(solicitud));
@@ -60,7 +61,7 @@ class SolicitudServiceTest {
     @Test
     void debe_guardar_solicitud_al_cerrarla() {
         // ARRANGE
-        Solicitud solicitud = new Solicitud(1L, Estado.EN_PROCESO, null);
+        SolicitudEntity solicitud = new SolicitudEntity(1L, Estado.EN_PROCESO, null);
         when(mockRepoSolicitud.findById(1L)).thenReturn(Optional.of(solicitud));
 
         // ACT
@@ -74,7 +75,7 @@ class SolicitudServiceTest {
     @Test
     void debe_lanzar_excepcion_si_tecnico_no_existe() {
         // ARRANGE
-        Solicitud solicitud = new Solicitud(1L, Estado.ABIERTA, null);
+        SolicitudEntity solicitud = new SolicitudEntity(1L, Estado.ABIERTA, null);
         when(mockRepoSolicitud.findById(1L)).thenReturn(Optional.of(solicitud));
         when(mockRepoTecnico.findById(99L)).thenReturn(Optional.empty());
 

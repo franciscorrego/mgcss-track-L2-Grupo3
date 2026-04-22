@@ -4,6 +4,7 @@ import com.mgcss.domain.Solicitud;
 import com.mgcss.domain.Tecnico;
 import com.mgcss.infrastructure.SolicitudRepository;
 import com.mgcss.infrastructure.TecnicoRepository;
+import com.mgcss.infrastructure.persistence.SolicitudEntity;
 
 public class SolicitudService {
     
@@ -19,7 +20,7 @@ public class SolicitudService {
     public void asignarTecnico(Long solicitudId, Long tecnicoId) {
         
         // 1. Protegemos la búsqueda: si el Optional está vacío, lanzamos nuestra excepción
-        Solicitud solicitud = solicitudRepository.findById(solicitudId)
+        SolicitudEntity solicitud = solicitudRepository.findById(solicitudId)
                 .orElseThrow(() -> new IllegalArgumentException("La solicitud no existe"));
                 
         Tecnico tecnico = tecnicoRepository.findById(tecnicoId)
@@ -34,7 +35,7 @@ public class SolicitudService {
     
     public void cerrarSolicitud(Long solicitudId) {
         // 1. Recuperamos la solicitud
-        Solicitud solicitud = solicitudRepository.findById(solicitudId)
+        SolicitudEntity solicitud = solicitudRepository.findById(solicitudId)
                 .orElseThrow(() -> new IllegalArgumentException("La solicitud no existe"));
 
         // 2. El servicio llama al dominio

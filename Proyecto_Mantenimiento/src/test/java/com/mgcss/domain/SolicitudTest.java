@@ -1,6 +1,9 @@
 package com.mgcss.domain;
 
 import org.junit.jupiter.api.Test;
+
+import com.mgcss.infrastructure.persistence.SolicitudEntity;
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -11,13 +14,13 @@ class SolicitudTest {
     
     @Test
     void no_debe_permitir_cerrar_solicitud_si_no_esta_en_proceso() {
-        Solicitud solicitud = new Solicitud(1L, Estado.ABIERTA, null); 
+        SolicitudEntity solicitud = new SolicitudEntity(1L, Estado.ABIERTA, null); 
         assertThrows(IllegalStateException.class, solicitud::cerrar);
     }
     
     @Test
     void debe_poder_cerrar_solicitud_si_esta_en_proceso() {
-        Solicitud solicitud = new Solicitud(1L, Estado.EN_PROCESO, null); 
+    	SolicitudEntity solicitud = new SolicitudEntity(1L, Estado.EN_PROCESO, null); 
         solicitud.cerrar();
         assertEquals(Estado.CERRADA, solicitud.getEstado()); // Camino feliz
     }
@@ -26,7 +29,7 @@ class SolicitudTest {
     
     @Test
     void no_debe_permitir_asignar_tecnico_inactivo() {
-        Solicitud solicitud = new Solicitud(1L, Estado.ABIERTA, null); 
+    	SolicitudEntity solicitud = new SolicitudEntity(1L, Estado.ABIERTA, null); 
         Tecnico tecnicoInactivo = new Tecnico(false);
         assertThrows(IllegalStateException.class, () -> {
             solicitud.asignarTecnico(tecnicoInactivo);
@@ -36,7 +39,7 @@ class SolicitudTest {
     @Test
     void debe_permitir_asignar_tecnico_activo() {
         // 1. ARRANGE
-        Solicitud solicitud = new Solicitud(1L, Estado.ABIERTA, null); 
+    	SolicitudEntity solicitud = new SolicitudEntity(1L, Estado.ABIERTA, null); 
         Tecnico tecnicoActivo = new Tecnico(true);
         
         // 2. ACT
@@ -50,7 +53,7 @@ class SolicitudTest {
     
     @Test
     void no_debe_permitir_asignar_tecnico_a_solicitud_cerrada() {
-        Solicitud solicitud = new Solicitud(1L, Estado.CERRADA, null); 
+    	SolicitudEntity solicitud = new SolicitudEntity(1L, Estado.CERRADA, null); 
         Tecnico tecnico = new Tecnico(true);
         assertThrows(IllegalStateException.class, () -> {
             solicitud.asignarTecnico(tecnico);
